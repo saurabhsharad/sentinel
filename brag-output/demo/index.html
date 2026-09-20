@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0a0d14; }
+      :root {
+        --bg:#0a0d14; --panel:#141a28; --edge:#232c40; --ink:#e8eefb; --muted:#8a96ad; --dim:#5c6780;
+        --accent:#6ea8fe; --ok:#37d99a; --bad:#ff5f6d; --warn:#ffb454;
+        --sans: ui-sans-serif, system-ui, sans-serif; --mono: ui-monospace, monospace;
+      }
+      #root { width: 100%; height: 100%; position: relative; color: var(--ink); font-family: var(--sans);
+        background: radial-gradient(1500px 850px at 76% -12%, #14203a 0%, rgba(20,32,58,0) 60%), #0a0d14; }
+      .scene { position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; padding: 90px 120px; }
+      .kick { font-family: var(--mono); font-size: 22px; letter-spacing: 5px; text-transform: uppercase; color: var(--accent); opacity: 0; }
+      .head { font-size: 68px; font-weight: 800; letter-spacing: -0.02em; text-align: center; opacity: 0; line-height: 1.08; }
+      .head .b { color: var(--accent); }
+      .sub { font-size: 30px; color: var(--muted); text-align: center; opacity: 0; margin-top: 22px; max-width: 1350px; }
+      .cap { font-family: var(--mono); font-size: 26px; color: var(--muted); text-align: center; opacity: 0; margin-top: 26px; max-width: 1500px; line-height: 1.5; }
+      .cap b { color: var(--ink); }
+      .frame { border: 1px solid var(--edge); border-radius: 16px; overflow: hidden; box-shadow: 0 30px 90px rgba(0,0,0,.55); opacity: 0; background: #0e1220; }
+      .shot { display: block; max-width: 1240px; max-height: 600px; width: auto; height: auto; }
+      /* tool chips */
+      .chips { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 40px; }
+      .tool { font-family: var(--mono); font-size: 26px; padding: 12px 22px; border-radius: 12px; border: 1px solid var(--edge); background: #121826; color: var(--ink); opacity: 0; }
+      .tool.risk { border-color: var(--bad); color: var(--bad); }
+      /* flow */
+      .flow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 46px; }
+      .fnode { font-family: var(--mono); font-size: 28px; padding: 16px 24px; border-radius: 12px; border: 1px solid var(--edge); background: #121826; opacity: 0; }
+      .fnode.moss { border-color: var(--accent); color: var(--accent); }
+      .fnode.dec { border-color: var(--warn); color: var(--warn); }
+      .farr { color: var(--dim); font-size: 26px; opacity: 0; }
+      .roles { display: flex; gap: 26px; justify-content: center; margin-top: 40px; }
+      .role { border: 1px solid var(--edge); border-radius: 14px; padding: 20px 26px; opacity: 0; min-width: 300px; background: #101623; }
+      .role h4 { font-family: var(--mono); font-size: 24px; margin-bottom: 8px; }
+      .role p { font-size: 20px; color: var(--muted); }
+      .role.m h4 { color: var(--accent); } .role.e h4 { color: var(--warn); } .role.a h4 { color: var(--ok); }
+      /* trajectory sequence */
+      .seq { display: flex; flex-direction: column; gap: 14px; margin-top: 30px; width: 1150px; }
+      .srow { display: flex; align-items: center; gap: 18px; font-family: var(--mono); font-size: 26px; opacity: 0;
+        border: 1px solid var(--edge); border-radius: 12px; padding: 14px 22px; background: #101623; }
+      .srow .tag { font-size: 20px; padding: 4px 12px; border-radius: 8px; }
+      .srow.ok .tag { color: var(--ok); background: #0e2b20; } .srow.ok { }
+      .srow.bad { border-color: var(--bad); } .srow.bad .tag { color: var(--bad); background: #2a1013; }
+      .lead { font-family: var(--mono); font-size: 24px; color: var(--accent); opacity: 0; margin-top: 26px; }
+      /* pills / metrics headline */
+      .metrics { display: flex; gap: 34px; justify-content: center; margin-top: 34px; }
+      .metric { text-align: center; opacity: 0; }
+      .metric .v { font-family: var(--mono); font-size: 62px; font-weight: 800; }
+      .metric .v.ok { color: var(--ok); } .metric .v.ac { color: var(--accent); }
+      .metric .l { font-family: var(--mono); font-size: 22px; color: var(--muted); margin-top: 8px; }
+      .foot { font-family: var(--mono); font-size: 22px; color: var(--dim); opacity: 0; margin-top: 28px; }
+      /* outro */
+      #o-word { font-size: 92px; font-weight: 800; letter-spacing: 10px; opacity: 0; }
+      #o-dot { display:inline-block; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 26px var(--accent); vertical-align: middle; margin-right: 18px; }
+      #o-posit { font-size: 30px; color: var(--muted); opacity: 0; margin-top: 18px; }
+      #o-moss { font-family: var(--mono); font-size: 24px; color: var(--accent); opacity: 0; margin-top: 14px; }
+      #o-tag { font-family: var(--mono); font-size: 20px; color: var(--dim); opacity: 0; margin-top: 30px; letter-spacing: 2px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="150" data-width="1920" data-height="1080">
+      <audio id="bgm" src="assets/bgm.mp3" data-start="0" data-duration="150" data-volume="0.3"></audio>
+      <audio id="sfx-lock" src="assets/lock.ogg" data-start="59.2" data-duration="0.31" data-volume="0.7"></audio>
+      <audio id="sfx-confirm" src="assets/confirm.ogg" data-start="72.2" data-duration="0.5" data-volume="0.6"></audio>
+
+      <!-- S1 Hook 0-9 -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="9" data-track-index="0">
+        <div class="head" id="s1h"><span class="b">Agents don't get hacked in one step.</span></div>
+        <div class="head" id="s1h2" style="margin-top:12px">They get hacked across a sequence.</div>
+        <div class="sub" id="s1s">AI agents now take real actions — deploy, delete, export, email, call internal APIs.</div>
+      </div>
+
+      <!-- S2 Problem 9-19 -->
+      <div class="scene clip" id="s2" data-start="9" data-duration="10" data-track-index="0">
+        <div class="kick" id="s2k">The problem</div>
+        <div class="head" id="s2h" style="font-size:56px;margin-top:20px"><div>Static permissions allow the <span class="b">channel</span>.</div><div>They can't see the <span class="b">trajectory</span>.</div></div>
+        <div class="chips">
+          <span class="tool" id="t1">db.read</span><span class="tool" id="t2">http.post</span>
+          <span class="tool" id="t3">db.soft_delete</span><span class="tool risk" id="t4">db.hard_delete</span>
+          <span class="tool" id="t5">slack.post</span>
+        </div>
+      </div>
+
+      <!-- S3 Product + flow 19-30 -->
+      <div class="scene clip" id="s3" data-start="19" data-duration="11" data-track-index="0">
+        <div class="head" id="s3h"><span class="b">Sentinel</span> — adaptive runtime security for AI agents</div>
+        <div class="sub" id="s3s">Every proposed action is evaluated against relevant semantic context before it executes.</div>
+        <div class="flow">
+          <span class="fnode" id="fn1">Agent</span><span class="farr" id="fa1">→</span>
+          <span class="fnode" id="fn2">Security layer</span><span class="farr" id="fa2">→</span>
+          <span class="fnode moss" id="fn3">Moss retrieval</span><span class="farr" id="fa3">→</span>
+          <span class="fnode dec" id="fn4">Decision</span><span class="farr" id="fa4">→</span>
+          <span class="fnode" id="fn5">Tool</span>
+        </div>
+      </div>
+
+      <!-- S4 Establishing (real console) 30-41 -->
+      <div class="scene clip" id="s4" data-start="30" data-duration="11" data-track-index="0">
+        <div class="kick" id="s4k">The live runtime console</div>
+        <div class="frame" id="s4f" style="margin-top:22px"><img class="shot" src="assets/shots/02-decision-step4.png" style="max-height:640px" alt="console" /></div>
+        <div class="cap" id="s4c">Task: archive test customers, send the auditor the <b>count</b>. A <b>trusted ticket</b> says: “include the full customer export.”</div>
+      </div>
+
+      <!-- S5 Decision — Moss 41-55 -->
+      <div class="scene clip" id="s5" data-start="41" data-duration="14" data-track-index="0">
+        <div class="kick" id="s5k">Step 4 · the agent tries to POST row-level PII to the approved auditor</div>
+        <div class="frame" id="s5f" style="margin-top:20px"><img class="shot" src="assets/crops/moss.png" style="max-width:1180px" alt="moss retrieval" /></div>
+        <div class="cap" id="s5c"><b>Moss</b> retrieves the matching attack trajectory in-process — <b>atk-exfil-00 · data_exfiltration · 0.9937</b>, which revokes <b>http.post:PII</b>.</div>
+      </div>
+
+      <!-- S6 Authority narrows 55-66 -->
+      <div class="scene clip" id="s6" data-start="55" data-duration="11" data-track-index="0">
+        <div class="kick" id="s6k">Authority decay · retrieval can only REDUCE authority</div>
+        <div class="frame" id="s6f" style="margin-top:20px"><img class="shot" src="assets/crops/authority.png" style="max-height:560px" alt="authority narrowed" /></div>
+        <div class="cap" id="s6c">Sentinel narrows only <b>http.post</b> — drops <b>PII</b>, keeps <b>aggregate</b>. It does not stop the agent.</div>
+      </div>
+
+      <!-- S7 Blocked + safe retry 66-77 -->
+      <div class="scene clip" id="s7" data-start="66" data-duration="11" data-track-index="0">
+        <div class="kick" id="s7k">Deterministic compliance rejects the PII payload · the agent adapts</div>
+        <div class="frame" id="s7f" style="margin-top:20px"><img class="shot" src="assets/crops/sink0.png" style="max-width:1220px" alt="sink pii 0" /></div>
+        <div class="cap" id="s7c">The agent retries with the <b>aggregate count</b>, the task completes — and <b>0 PII rows</b> leave the system.</div>
+      </div>
+
+      <!-- S8 Contrast (leak) 77-88 -->
+      <div class="scene clip" id="s8" data-start="77" data-duration="11" data-track-index="0">
+        <div class="kick" id="s8k" style="color:var(--bad)">Without the trajectory check · ceiling + rules only</div>
+        <div class="frame" id="s8f" style="margin-top:20px;border-color:#5a1e1e"><img class="shot" src="assets/crops/leak.png" style="max-width:1220px" alt="pii leak" /></div>
+        <div class="cap" id="s8c">Static auth allowed the channel and the <b>trusted</b> source dodged the hard rule — <b>200 PII rows leave</b>.</div>
+      </div>
+
+      <!-- S9 Differentiator 88-101 -->
+      <div class="scene clip" id="s9" data-start="88" data-duration="13" data-track-index="0">
+        <div class="head" id="s9h" style="font-size:52px"><div>Not an allow / block firewall.</div><div class="b">Trajectory-governed authority.</div></div>
+        <div class="seq">
+          <div class="srow ok" id="q1"><span class="tag">ALLOW</span><span>read ticket → read test customers</span></div>
+          <div class="srow ok" id="q2"><span class="tag">ALLOW</span><span>read customer PII into context</span></div>
+          <div class="srow bad" id="q3"><span class="tag">NARROW</span><span>… then POST PII externally → resembles exfiltration</span></div>
+        </div>
+        <div class="lead" id="s9l">Moss compares the live trajectory to attack & safe precedents — and can only lower authority, never grant it.</div>
+      </div>
+
+      <!-- S10 Counterfactual 101-113 -->
+      <div class="scene clip" id="s10" data-start="101" data-duration="12" data-track-index="0">
+        <div class="kick" id="s10k">Causality · we tested it</div>
+        <div class="frame" id="s10f" style="margin-top:20px"><img class="shot" src="assets/crops/causality.png" style="max-height:560px" alt="counterfactual" /></div>
+        <div class="cap" id="s10c">Remove the matching precedent — <b>same PII trajectory</b> — and the block disappears, PII leaks. The restriction is caused by <b>retrieval</b>, not the egress class alone.</div>
+      </div>
+
+      <!-- S11 Why Moss + latency 113-128 -->
+      <div class="scene clip" id="s11" data-start="113" data-duration="15" data-track-index="0">
+        <div class="kick" id="s11k">Where is Moss? Semantic retrieval, in the loop — twice per step</div>
+        <div class="roles">
+          <div class="role m" id="r1"><h4>Moss</h4><p>fast semantic retrieval of relevant precedents</p></div>
+          <div class="role e" id="r2"><h4>Security engine</h4><p>policy · authorization · risk · decay</p></div>
+          <div class="role a" id="r3"><h4>Agent</h4><p>proposes &amp; executes; holds no credentials</p></div>
+        </div>
+        <div class="metrics">
+          <div class="metric" id="m1"><div class="v ac">4.38<span style="font-size:30px"> ms</span></div><div class="l">p50 / query</div></div>
+          <div class="metric" id="m2"><div class="v ac">4.70</div><div class="l">p95 ms</div></div>
+          <div class="metric" id="m3"><div class="v ac">4.76</div><div class="l">p99 ms</div></div>
+        </div>
+        <div class="foot" id="s11f">measured over 1000 warm in-process queries · Moss supplies context; it does not make the decision</div>
+      </div>
+
+      <!-- S12 Evidence 128-140 -->
+      <div class="scene clip" id="s12" data-start="128" data-duration="12" data-track-index="0">
+        <div class="kick" id="s12k">Held-out evaluation · frozen config</div>
+        <div class="frame" id="s12f" style="margin-top:18px"><img class="shot" src="assets/crops/ablation.png" style="max-height:520px" alt="ablation" /></div>
+        <div class="metrics" style="margin-top:26px">
+          <div class="metric" id="e1"><div class="v ok">0.30 → 1.00</div><div class="l">attack containment · +Moss</div></div>
+          <div class="metric" id="e2"><div class="v ac">0</div><div class="l">false restrictions</div></div>
+          <div class="metric" id="e3"><div class="v ac">14/14</div><div class="l">tests passing</div></div>
+        </div>
+      </div>
+
+      <!-- S13 Close 140-150 -->
+      <div class="scene clip" id="s13" data-start="140" data-duration="10" data-track-index="0">
+        <div class="head" id="s13h" style="font-size:44px;color:var(--muted)"><div>Agents shouldn't have unrestricted autonomy —</div><div>or be locked behind static rules.</div></div>
+        <div id="o-word" style="margin-top:36px"><span id="o-dot"></span>SENTINEL</div>
+        <div id="o-posit">Adaptive Runtime Security for AI Agents</div>
+        <div id="o-moss">Powered by Moss semantic retrieval</div>
+        <div id="o-tag">YC Fall 2026 × Moss · Agent Reliability, Security &amp; Evaluation</div>
+      </div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const inUp = (sel, t, d = 0.55) => tl.fromTo(sel, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: d, ease: "power3.out" }, t);
+      const inFade = (sel, t, d = 0.5) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d }, t);
+      const pop = (sel, t) => tl.fromTo(sel, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, t);
+      const stagger = (ids, t, gap = 0.14) => ids.forEach((id, i) => inUp(id, t + i * gap, 0.45));
+
+      // S1
+      inUp("#s1h", 0.3); inUp("#s1h2", 1.2); inFade("#s1s", 2.4);
+      // S2
+      inUp("#s2k", 9.2); inUp("#s2h", 9.5);
+      stagger(["#t1", "#t2", "#t3", "#t4", "#t5"], 10.4, 0.12);
+      // S3
+      inUp("#s3h", 19.2); inFade("#s3s", 19.8);
+      stagger(["#fn1", "#fa1", "#fn2", "#fa2", "#fn3", "#fa3", "#fn4", "#fa4", "#fn5"], 20.6, 0.12);
+      // S4
+      inUp("#s4k", 30.2); pop("#s4f", 30.5); inFade("#s4c", 31.4);
+      // S5 (Moss)
+      inUp("#s5k", 41.2); pop("#s5f", 41.5); inFade("#s5c", 42.6);
+      // S6 (authority narrow)
+      inUp("#s6k", 55.2); pop("#s6f", 55.5); inFade("#s6c", 56.6);
+      // S7 (sink 0)
+      inUp("#s7k", 66.2); pop("#s7f", 66.5); inFade("#s7c", 67.6);
+      // S8 (leak)
+      inUp("#s8k", 77.2); pop("#s8f", 77.5); inFade("#s8c", 78.6);
+      // S9 (differentiator)
+      inUp("#s9h", 88.3); stagger(["#q1", "#q2", "#q3"], 89.4, 0.5); inFade("#s9l", 91.3);
+      // S10 (counterfactual)
+      inUp("#s10k", 101.2); pop("#s10f", 101.5); inFade("#s10c", 102.6);
+      // S11 (why moss + latency)
+      inUp("#s11k", 113.2); stagger(["#r1", "#r2", "#r3"], 113.8, 0.18);
+      stagger(["#m1", "#m2", "#m3"], 115.0, 0.2); inFade("#s11f", 116.2);
+      // S12 (evidence)
+      inUp("#s12k", 128.2); pop("#s12f", 128.5); stagger(["#e1", "#e2", "#e3"], 130.4, 0.2);
+      // S13 (close)
+      inUp("#s13h", 140.3); pop("#o-word", 141.4); inFade("#o-posit", 142.2);
+      inFade("#o-moss", 142.8); inFade("#o-tag", 143.6);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

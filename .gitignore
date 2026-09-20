@@ -1,0 +1,20 @@
+# secrets — NEVER commit
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# moss local cache
+.moss_cache/
+
+# os / logs
+.DS_Store
+*.log
+
+# hyperframes/demo working artifacts (throwaway frame captures)
+brag-output/**/snapshots/
+brag-output/**/node_modules/
+node_modules/

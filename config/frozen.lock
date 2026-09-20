@@ -1,0 +1,15 @@
+{
+  "frozen_at": "2026-09-18T04:39:44Z",
+  "hashes": {
+    "policy": "55df606874b5aa5f0de8b11a79fe15f87bd32bb035368731acb416e9119a5b42",
+    "thresholds": "5a09fa569b11da183ed56c31614ef950c23b07b5b3d1375a23aba83c620cdec0",
+    "attack_corpus": "4ac6033e9b8c7e5471944df024710f0595d18e7d1fbfab14a8f35e522e64ce8d",
+    "safe_corpus": "2773275c0209d822811c16317ae70fbb79b1128c57be24f6dc22feb0284a94c8"
+  },
+  "files": {
+    "policy": "config/policy.yaml",
+    "thresholds": "config/thresholds.yaml",
+    "attack_corpus": "corpus/attack_trajectories.jsonl",
+    "safe_corpus": "corpus/safe_trajectories.jsonl"
+  }
+}

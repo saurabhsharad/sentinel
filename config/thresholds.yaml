@@ -1,0 +1,26 @@
+# Sentinel retrieval / drift thresholds — FROZEN (Phase 2).
+#
+# restrict_threshold was tuned ONLY on corpus/dev/benign.jsonl (INV-7) by
+# eval/tune_thresholds.py (measured dev-benign max drift EMA = 0.0), then frozen and
+# hashed into config/frozen.lock. Held-out data was never used for tuning. Real Moss
+# scores are compressed (~0.8-1.0); we do NOT manufacture gaps. Attack-vs-safe
+# retrieval is scoped by the current step's egress data-class (the safe corpus never
+# egresses PII/secret), so a PII/secret egress yields a large raw_drift while benign
+# egress yields ~0 — the threshold sits far below attack drift and above dev-benign max.
+#
+# To re-tune: `make tune` (rewrites the numeric value; re-add these comments) then `make freeze`.
+
+retrieval:
+  top_k: 3
+  alpha: 0.8            # Moss default hybrid; alpha=1.0 gave no better separation (Phase 0/2 probes).
+  window_size: 4        # last N normalized steps + current (sliding window, §22)
+
+drift:
+  alpha_ema: 0.8        # EMA weight on raw_drift (§23): drift_t = a*raw + (1-a)*drift_(t-1)
+  restrict_threshold: 0.1     # TUNED on dev benign (max = 0.0) + 0.10 margin
+  require_positive_raw: true  # only restrict when the current step is attack-leaning
+  _tuned_on: dev/benign.jsonl
+  _dev_benign_max_drift: 0.0
+
+state:
+  lock_threshold: 0.2   # Scoped->Restricted only in Phase 2; LOCKED reserved

@@ -1,0 +1,30 @@
+{
+  "normal": {
+    "pii_to_sink": 0,
+    "state": "RESTRICTED",
+    "precedent": "atk-exfil-00",
+    "family": "data_exfiltration",
+    "revokes": "http.post:PII",
+    "drift": 0.795
+  },
+  "counterfactual": {
+    "pii_to_sink": 1,
+    "state": "SCOPED",
+    "restriction": null
+  },
+  "hard_negative": {
+    "semantic_similarity_to_exfil": 1.0,
+    "egress_aggregate_attack_bucket": 0,
+    "triggered": false
+  },
+  "routing": {
+    "pii_egress": {
+      "family": "data_exfiltration",
+      "revokes": "http.post:PII"
+    },
+    "secret_egress": {
+      "family": "credential_harvesting",
+      "revokes": "http.post:secret"
+    }
+  }
+}

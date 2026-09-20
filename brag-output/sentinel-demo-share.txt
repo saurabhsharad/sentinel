@@ -1,0 +1,7 @@
+Sentinel — Adaptive Runtime Security for AI Agents (YC Fall 2026 × Moss)
+
+AI agents now take real actions. Static permissions allow the *channel* but can't see the *trajectory*. Sentinel evaluates every proposed action against relevant semantic context — using Moss for in-process retrieval, twice per step — and narrows only the dangerous authority instead of blocking the whole agent.
+
+In the demo: a trusted ticket pushes the agent to POST row-level customer PII to an already-approved auditor. Static auth allows it. Sentinel's trajectory check retrieves the matching data-exfiltration precedent (0.9937) via Moss, narrows http.post to drop PII (keeps aggregate), and the PII payload is rejected — the agent adapts, sends the aggregate count, task completes, 0 PII rows leave. Held-out containment goes 0.30 → 1.00 with Moss; 0 false restrictions; 14/14 tests.
+
+Moss = semantic retrieval (p50 4.38 ms/query, measured). Security engine = policy/authorization/risk. Moss supplies the context fast enough to run on every action — it doesn't make the decision.

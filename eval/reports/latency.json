@@ -1,0 +1,17 @@
+{
+  "n_retrievals": 1000,
+  "note": "each retrieve() = 2 in-process index queries (attack+safe), egress-filtered; wall-clock includes asyncio hop",
+  "retrieve_ms": {
+    "p50": 8.764,
+    "p95": 9.401,
+    "p99": 9.514,
+    "mean": 7.711
+  },
+  "single_query_ms": {
+    "p50": 4.382,
+    "p95": 4.701,
+    "p99": 4.757
+  },
+  "throughput_retrieve_per_s": 129.7,
+  "overhead_per_7step_task_ms": 61.35
+}

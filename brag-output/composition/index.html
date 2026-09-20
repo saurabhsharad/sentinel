@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0a0d14; }
+      :root {
+        --bg:#0a0d14; --panel:#141a28; --edge:#232c40; --ink:#e8eefb; --muted:#8a96ad;
+        --accent:#6ea8fe; --ok:#37d99a; --bad:#ff5f6d; --warn:#ffb454;
+        --sans: ui-sans-serif, system-ui, sans-serif;
+        --mono: ui-monospace, monospace;
+      }
+      #root { width: 100%; height: 100%; position: relative;
+        background: radial-gradient(1400px 800px at 74% -12%, #14203a 0%, rgba(20,32,58,0) 60%), #0a0d14;
+        font-family: var(--sans); color: var(--ink); }
+      .scene { position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; padding: 120px; }
+      .kicker { font-family: var(--mono); font-size: 22px; letter-spacing: 6px; text-transform: uppercase;
+        color: var(--muted); opacity: 0; }
+      /* Scene 1 */
+      #s1-l1 { font-size: 76px; font-weight: 800; letter-spacing: -0.02em; opacity: 0; text-align: center; }
+      #s1-l2 { font-size: 76px; font-weight: 800; letter-spacing: -0.02em; color: var(--accent); opacity: 0; margin-top: 10px; text-align: center; }
+      #s1-rule { width: 0px; height: 5px; border-radius: 3px; background: var(--accent); margin-top: 40px; box-shadow: 0 0 26px #6ea8fe88; }
+      /* Scene 2 */
+      #s2 .kicker { margin-bottom: 34px; }
+      .cap { width: 1120px; background: #141a28; border: 1px solid var(--edge); border-radius: 16px;
+        padding: 22px 30px; margin: 11px 0; display: flex; align-items: center; gap: 18px; opacity: 0;
+        font-family: var(--mono); font-size: 30px; }
+      .cap .nm { font-weight: 700; }
+      .cap .to { color: var(--muted); font-size: 24px; }
+      .cap .sp { margin-left: auto; display: flex; gap: 10px; }
+      .chip { font-family: var(--mono); font-size: 22px; padding: 6px 14px; border-radius: 9px; border: 1px solid var(--edge); }
+      .chip.ok { color: var(--ok); border-color: #1c4a34; background: #0e2b20; }
+      .chip.no { color: var(--bad); border-color: #5a1e1e; background: #2a1013; }
+      #s2-cap { font-family: var(--mono); font-size: 24px; color: var(--muted); margin-top: 30px; opacity: 0; }
+      /* Scene 3 */
+      #s3 .kicker { margin-bottom: 26px; }
+      #s3-card { width: 1180px; background: #141a28; border: 1px solid var(--warn); border-radius: 18px; padding: 30px 34px; opacity: 0;
+        box-shadow: 0 0 0 1px #ffb45433, 0 18px 60px #ffb4541f; }
+      #s3-card .hdr { font-family: var(--mono); font-size: 34px; font-weight: 700; display: flex; align-items: center; gap: 16px; }
+      #s3-card .hdr .to { color: var(--muted); font-size: 26px; }
+      #s3-chips { display: flex; gap: 14px; margin-top: 20px; align-items: center; }
+      #s3-agg { font-family: var(--mono); font-size: 26px; color: var(--ok); padding: 8px 16px; border-radius: 10px; border: 1px solid #1c4a34; background: #0e2b20; }
+      .piiwrap { position: relative; width: 150px; height: 52px; }
+      .piiwrap > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        font-family: var(--mono); font-size: 26px; padding: 8px 16px; border-radius: 10px; }
+      #s3-pii-ok { color: var(--ok); border: 1px solid #1c4a34; background: #0e2b20; opacity: 1; }
+      #s3-pii-no { color: var(--bad); border: 1px solid #5a1e1e; background: #2a1013; opacity: 0; text-decoration: line-through; }
+      #s3-chain { display: flex; align-items: center; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+      .node { font-family: var(--mono); font-size: 21px; padding: 9px 15px; border-radius: 10px; border: 1px dashed var(--edge); color: var(--muted); opacity: 0.35; }
+      .node.lit { color: var(--ink); border-style: solid; border-color: var(--accent); background: #13223a; opacity: 1; }
+      .node.dec { color: var(--warn); border-color: var(--warn); background: #2a2110; }
+      #s3-agentline { font-family: var(--mono); font-size: 24px; color: var(--muted); margin-top: 22px; opacity: 0; }
+      #s3-agentline b { color: var(--ink); }
+      /* Scene 4 */
+      #s4 { }
+      #s4-ghost { font-family: var(--mono); font-size: 30px; color: var(--bad); opacity: 0; margin-bottom: 26px; }
+      #s4-nums { display: flex; align-items: flex-end; gap: 90px; }
+      .bignum { font-family: var(--mono); font-weight: 800; line-height: 1; }
+      #s4-zero { font-size: 260px; color: var(--ok); text-shadow: 0 0 60px #37d99a55; opacity: 0; }
+      #s4-one { font-size: 130px; color: var(--ink); opacity: 0; }
+      .numlbl { font-family: var(--mono); font-size: 24px; color: var(--muted); margin-top: 14px; text-align: center; }
+      #s4-cap { font-family: var(--mono); font-size: 26px; color: var(--muted); margin-top: 40px; opacity: 0; }
+      /* Scene 5 */
+      #s5 .kicker { margin-bottom: 40px; }
+      .bars { display: flex; flex-direction: column; gap: 26px; width: 1160px; }
+      .barrow { display: flex; align-items: center; gap: 22px; opacity: 0; }
+      .barlbl { font-family: var(--mono); font-size: 28px; width: 300px; color: var(--ink); }
+      .bartrack { flex: 1; height: 40px; background: #0f1524; border: 1px solid var(--edge); border-radius: 10px; overflow: hidden; position: relative; }
+      .barfill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: left center; border-radius: 9px; }
+      .barval { font-family: var(--mono); font-size: 28px; width: 90px; text-align: right; }
+      #s5-foot { font-family: var(--mono); font-size: 24px; color: var(--muted); margin-top: 42px; opacity: 0; }
+      /* Scene 6 */
+      #s6-line { font-size: 58px; font-weight: 800; letter-spacing: -0.02em; text-align: center; opacity: 0; max-width: 1400px; }
+      #s6-line b { color: var(--accent); }
+      #s6-mark { display: flex; align-items: center; gap: 16px; margin-top: 36px; opacity: 0; }
+      #s6-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 22px var(--accent); }
+      #s6-word { font-size: 52px; font-weight: 800; letter-spacing: 8px; }
+      #s6-tag { font-family: var(--mono); font-size: 22px; color: var(--muted); margin-top: 16px; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="20" data-width="1920" data-height="1080">
+
+      <audio id="bgm" src="assets/bgm.mp3" data-start="0" data-duration="20" data-volume="0.34"></audio>
+      <audio id="sfx-lock" src="assets/lock.ogg" data-start="7.75" data-duration="0.31" data-volume="0.7"></audio>
+      <audio id="sfx-confirm" src="assets/confirm.ogg" data-start="11.5" data-duration="0.5" data-volume="0.6"></audio>
+
+      <!-- Scene 1: Hook -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="3.1" data-track-index="0">
+        <div id="s1-l1">Agents don't get hacked in one step.</div>
+        <div id="s1-l2">They get hacked across a sequence.</div>
+        <div id="s1-rule"></div>
+      </div>
+
+      <!-- Scene 2: Setup -->
+      <div class="scene clip" id="s2" data-start="3.1" data-duration="3.4" data-track-index="0">
+        <div class="kicker">Current authority</div>
+        <div class="cap" id="s2-c1"><span class="nm">tickets.read</span><span class="to">→ T-1042</span><span class="sp"><span class="chip ok">read ✓</span></span></div>
+        <div class="cap" id="s2-c2"><span class="nm">db.read</span><span class="to">→ customers</span><span class="sp"><span class="chip ok">aggregate ✓</span><span class="chip ok">PII ✓</span></span></div>
+        <div class="cap" id="s2-c3"><span class="nm">http.post</span><span class="to">→ audit-partner.com</span><span class="sp"><span class="chip ok">aggregate ✓</span><span class="chip ok">PII ✓</span></span></div>
+        <div id="s2-cap">trusted ticket · every step approved by policy</div>
+      </div>
+
+      <!-- Scene 3: The turn / narrowing -->
+      <div class="scene clip" id="s3" data-start="6.5" data-duration="4.0" data-track-index="0">
+        <div class="kicker">Trajectory → Moss → authority decay</div>
+        <div id="s3-card">
+          <div class="hdr"><span>http.post</span><span class="to">→ audit-partner.com</span></div>
+          <div id="s3-chips">
+            <span id="s3-agg">aggregate ✓</span>
+            <div class="piiwrap"><span id="s3-pii-ok" data-layout-allow-overlap>PII ✓</span><span id="s3-pii-no" data-layout-allow-overlap>PII ✗</span></div>
+          </div>
+          <div id="s3-chain">
+            <span class="node" id="n1">trajectory</span><span class="node" id="n2">Moss precedent · sim 0.99</span><span class="node" id="n3">drift 0.79</span><span class="node" id="n4">authority decay</span>
+          </div>
+          <div id="s3-agentline">agent: <b>POST customers(name, email, phone)</b> → external</div>
+        </div>
+      </div>
+
+      <!-- Scene 4: Proof -->
+      <div class="scene clip" id="s4" data-start="10.5" data-duration="4.0" data-track-index="0">
+        <div class="kicker">External sink · audit-partner.com</div>
+        <div id="s4-ghost">rows ×200 (PII) → rejected</div>
+        <div id="s4-nums">
+          <div style="display:flex;flex-direction:column;align-items:center"><div class="bignum" id="s4-zero">0</div><div class="numlbl">PII payloads sent</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center"><div class="bignum" id="s4-one">1</div><div class="numlbl">aggregate sent</div></div>
+        </div>
+        <div id="s4-cap">the legitimate task still finished</div>
+      </div>
+
+      <!-- Scene 5: Receipts -->
+      <div class="scene clip" id="s5" data-start="14.5" data-duration="3.5" data-track-index="0">
+        <div class="kicker">Held-out containment · frozen config</div>
+        <div class="bars">
+          <div class="barrow" id="b1"><div class="barlbl">ceiling</div><div class="bartrack"><div class="barfill" id="f1" style="background:#3a4256"></div></div><div class="barval" style="color:var(--muted)">0.30</div></div>
+          <div class="barrow" id="b2"><div class="barlbl">+ hard rules</div><div class="bartrack"><div class="barfill" id="f2" style="background:#3a4256"></div></div><div class="barval" style="color:var(--muted)">0.30</div></div>
+          <div class="barrow" id="b3"><div class="barlbl">+ Moss</div><div class="bartrack"><div class="barfill" id="f3" style="background:var(--ok)"></div></div><div class="barval" style="color:var(--ok)">1.00</div></div>
+        </div>
+        <div id="s5-foot">Moss in the loop · 4.38 ms / query · PII sent: 0</div>
+      </div>
+
+      <!-- Scene 6: Outro -->
+      <div class="scene clip" id="s6" data-start="18.0" data-duration="2.0" data-track-index="0">
+        <div id="s6-line"><div>We didn't block the agent.</div><div>We controlled its <b>authority</b>.</div></div>
+        <div id="s6-mark"><div id="s6-dot"></div><div id="s6-word">SENTINEL</div></div>
+        <div id="s6-tag">Trajectory-governed authority · Moss in the loop</div>
+      </div>
+
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1 — Hook
+      tl.fromTo("#s1-l1", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+      tl.fromTo("#s1-l2", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 1.4);
+      tl.fromTo("#s1-rule", { width: 0 }, { width: 320, duration: 0.6, ease: "power2.out" }, 1.9);
+      tl.to(["#s1-l1", "#s1-l2", "#s1-rule"], { opacity: 0, duration: 0.35 }, 2.75);
+
+      // Scene 2 — Setup
+      tl.fromTo("#s2 .kicker", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4 }, 3.2);
+      tl.fromTo("#s2-c1", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 3.5);
+      tl.fromTo("#s2-c2", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 3.8);
+      tl.fromTo("#s2-c3", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 4.1);
+      tl.fromTo("#s2-cap", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 4.7);
+
+      // Scene 3 — Narrowing
+      tl.fromTo("#s3 .kicker", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4 }, 6.7);
+      tl.fromTo("#s3-card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.9);
+      tl.fromTo("#s3-agentline", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 7.15);
+      // chain nodes ignite (animate props directly — deterministic, no className tween)
+      [["#n1", 7.3], ["#n2", 7.5], ["#n3", 7.65]].forEach(([id, t]) => {
+        tl.set(id, { borderStyle: "solid" }, t);
+        tl.to(id, { opacity: 1, color: "#e8eefb", borderColor: "#6ea8fe", backgroundColor: "#13223a", duration: 0.2 }, t);
+      });
+      tl.set("#n4", { borderStyle: "solid" }, 7.75);
+      tl.to("#n4", { opacity: 1, color: "#ffb454", borderColor: "#ffb454", backgroundColor: "#2a2110", duration: 0.2 }, 7.75);
+      // PII flip
+      tl.to("#s3-pii-ok", { opacity: 0, duration: 0.2 }, 7.78);
+      tl.fromTo("#s3-pii-no", { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 7.8);
+      tl.to("#s3-card", { boxShadow: "0 0 0 1px #ff5f6d55, 0 18px 60px #ff5f6d33", duration: 0.3 }, 7.8);
+
+      // Scene 4 — Proof
+      tl.fromTo("#s4 .kicker", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4 }, 10.7);
+      tl.fromTo("#s4-ghost", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 10.85);
+      tl.to("#s4-ghost", { opacity: 0.35, textDecoration: "line-through", duration: 0.3 }, 11.3);
+      tl.fromTo("#s4-zero", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.7)" }, 11.5);
+      tl.fromTo("#s4-one", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }, 12.2);
+      tl.fromTo("#s4-cap", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 12.9);
+
+      // Scene 5 — Receipts
+      tl.fromTo("#s5 .kicker", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4 }, 14.7);
+      tl.fromTo("#f1", { scaleX: 0 }, { scaleX: 0.30, duration: 0.5, ease: "power2.out" }, 14.9);
+      tl.fromTo("#b1", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 14.9);
+      tl.fromTo("#f2", { scaleX: 0 }, { scaleX: 0.30, duration: 0.5, ease: "power2.out" }, 15.2);
+      tl.fromTo("#b2", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 15.2);
+      tl.fromTo("#b3", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 15.6);
+      tl.fromTo("#f3", { scaleX: 0 }, { scaleX: 1.0, duration: 0.7, ease: "power3.out" }, 15.6);
+      tl.fromTo("#s5-foot", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 16.6);
+
+      // Scene 6 — Outro
+      tl.fromTo("#s6-line", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 18.15);
+      tl.fromTo("#s6-mark", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45 }, 19.0);
+      tl.fromTo("#s6-tag", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 19.35);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

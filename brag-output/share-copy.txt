@@ -1,0 +1,1 @@
+Sentinel: we didn't block the agent — we controlled its authority. It watches an AI agent's trajectory with Moss retrieval in the execution loop (~4.4 ms/query) and narrows just the dangerous capability the moment the path starts to look like exfiltration — PII egress gets blocked while the legitimate task still finishes. Held-out attack containment: 0.30 → 1.00. 🛡️
