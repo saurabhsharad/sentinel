@@ -1,0 +1,13 @@
+# Render blueprint — https://render.com  (New + → Blueprint → connect this repo)
+services:
+  - type: web
+    name: sentinel
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: MOSS_PROJECT_ID
+        sync: false   # set in the Render dashboard (secret)
+      - key: MOSS_PROJECT_KEY
+        sync: false   # set in the Render dashboard (secret)
