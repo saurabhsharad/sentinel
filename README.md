@@ -2,6 +2,7 @@
 
 > **Don't trust the agent. Don't block the agent. Control its authority.**
 
+**🚀 Live app:** https://sentinel-zrri.onrender.com — the console (`/`), evidence (`/?tab=evidence`), health (`/api/health`). *Free tier sleeps when idle; first load may take ~40–60s to wake and warm Moss.*
 **🎥 Demo video:** https://youtu.be/v5xE2jWmj6Q
 **📄 PRD:** [PRD.md](PRD.md) · **📐 Architecture:** [docs/architecture.png](docs/architecture.png)
 **🏆 Built for:** YC Fall 2026 × Moss — *The Zero Latency Builder Sprint* · theme *Agent Reliability, Security & Evaluation*
